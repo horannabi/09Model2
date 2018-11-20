@@ -229,8 +229,8 @@
 					</td>
 				</tr>
 			</table>
-
 			<!--  페이지 Navigator 끝 -->
+			
 		</form>
 
 	</div>

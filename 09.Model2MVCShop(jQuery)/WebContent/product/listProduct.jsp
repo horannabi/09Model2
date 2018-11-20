@@ -36,11 +36,10 @@
 		//document.getElementById("currentPage").value = currentPage;
    		$("#currentPage").val(currentPage)
 		//document.detailForm.submit();		
-   		$("form").attr("method" , "POST").attr("action" , "/product/listProduct").submit();
+   		$("form").attr("method" , "POST").attr("action" , "/product/listProduct?menu=${param.menu}").submit();
 	}
 	
 	$(function() {
-		 
 		//==> 검색 Event 연결처리부분
 		//==> DOM Object GET 3가지 방법 ==> 1. $(tagName) : 2.(#id) : 3.$(.className)
 		//==> 1 과 3 방법 조합 : $("tagName.className:filter함수") 사용함. 
@@ -50,10 +49,10 @@
 			fncGetList(1);
 		});
 		 
-		 $( ".ct_list_pop td:nth-child(3)" ).on("click" , function() {
+		 $( ".ct_list_pop td:nth-child(3)").on("click" , function() {
 			 var prodNo = $(this).data("param");
 				//Debug..
-				alert(  $( this ).text().trim() +"menu=search");
+				//alert(  $( this ).text().trim() +"menu=search");
 				//self.location ="/product/getProduct?prodNo=${product.prodNo}&menu=search";
 				if(${param.menu == 'manage'}){
 					self.location ="/product/updateProduct?prodNo="+prodNo+"&menu=manage";
@@ -62,12 +61,13 @@
 				}
 		});
 		 
-		 if(${param.menu == 'manage'}){
-		 $( ".ct_list_pop td:contains('배송하기')" ).on("click" , function() {
-				 self.location ="/purchase/updateTranCodeByProd?purchaseProd.prodNo=${product.prodNo}&tranCode=2";
-		});
-		 }
-	});
+		 $(".ct_list_pop .changeTranCode").on("click", function(){
+	         var productNo = $(this).data("param")
+	         self.location="/purchase/updateTranCodeByProd?prodNo="+productNo+"&tranCode=2"
+	      });
+	 });
+		 
+		
 </script>
 </head>
 
@@ -227,7 +227,6 @@
 				
 				
 				 --%>
-				
 				${product.prodName}
 				</td>
 			<%-- </c:if> --%>
@@ -236,7 +235,7 @@
 		<td></td>
 		<td align="left">${product.regDate}</td>
 		<td></td>
-		<td align="left">
+		<td align="left" data-param="${product.proTranCode}">
 			
 					<c:if test = "${product.proTranCode==null || product.proTranCode=='0'}">
 					판매중
@@ -245,10 +244,9 @@
 					재고없음
 					
 						<c:if test = "${param.menu=='manage'&&fn:trim(product.proTranCode)=='1'}" >
-						<!-- ////////////////// jQuery Event 처리로 변경됨 /////////////////////////
-						<a href="/purchase/updateTranCodeByProd?purchaseProd.prodNo=${product.prodNo}&tranCode=2">배송하기</a>
-						///////////////////////////////////////////////////////////////////////////-->
-						배송하기
+						
+						<!-- <a href="/purchase/updateTranCodeByProd?purchaseProd.prodNo=${product.prodNo}&tranCode=2">배송하기</a> -->
+							<span class="changeTranCode" data-param="${product.prodNo}">배송하기</span>
 						</c:if>
 						<c:if test = "${param.menu=='manage'&&fn:trim(product.proTranCode)=='2'}" >
 								(배송중)

@@ -161,7 +161,7 @@ public class PurchaseController {
 		return "redirect:/purchase/listPurchase";
 	}
 	@RequestMapping(value = "updateTranCodeByProd")
-	public String updateTranCodeByProd(@RequestParam("tranCode") String tranCode, @RequestParam("purchaseProd.prodNo") int prodNo) throws Exception{
+	public String updateTranCodeByProd(@RequestParam("tranCode") String tranCode, @RequestParam("prodNo") int prodNo) throws Exception{
 		System.out.println("/updateTranCodeByProd");
 		
 		Purchase purchase = purchaseService.getPurchase2(prodNo);
