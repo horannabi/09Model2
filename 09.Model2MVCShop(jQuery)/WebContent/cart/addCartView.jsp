@@ -1,8 +1,8 @@
 <%@ page contentType="text/html; charset=euc-kr" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<%-- /////////////////////// EL / JSTL 적용으로 주석 처리 ////////////////////////
-<%@ page import="com.model2.mvc.service.domain.*" %>
 
+<%@ page import="com.model2.mvc.service.domain.*" %>
+<%-- /////////////////////// EL / JSTL 적용으로 주석 처리 ////////////////////////
 <%
 	Product product = (Product)request.getAttribute("product"); 
 	User user = (User)session.getAttribute("user");
@@ -10,60 +10,49 @@
 
 <html>
 <head>
-<title>Insert title here</title>
 
 <link rel="stylesheet" href="/css/admin.css" type="text/css">
 
+<title>Insert title here</title>
+
+<script type="text/javascript" src="../javascript/calendar.js">
+</script>
+<!-- CDN(Content Delivery Network) 호스트 사용 -->
 <script src="http://code.jquery.com/jquery-2.1.4.min.js"></script>
-<script type="text/javascript" src="../javascript/calendar.js"></script>
 <script type="text/javascript">
-function fncAddPurchase(){
-	//var prodNo = $("input[name='prodNo']").val();
-	var receiverName = $("input[name='receiverName']").val();
-	var receiverPhone = $("input[name='receiverPhone']").val();
-	var divyAddr = $("input[name='divyAddr']").val();
-	var tranAmount= $("input[name='tranAmount']").val();
-	var prodAmount= $("td.ct_write:contains('구매가능수량')").val();
+
+function fncAddCart() {
+	var cartAmount=document.addCart.cartAmount.value;
+	var prodAmount=${product.prodAmount};
 	
-	if(receiverName==null || receiverName.length<1){
-		alert("구매자이름은 반드시 입력하여야 합니다.");
-		return;
-	}
-	if(receiverPhone==null || receiverPhone.length<1){
-		alert("구매자연락처는 반드시 입력하여야 합니다.");
-		return;
-	}
-	if(divyAddr==null || divyAddr.length<1){
-		alert("구매자주소는 반드시 입력하여야 합니다.");
-		return;
-	}
-	/* if(tranAmount > prodAmount){
+	if(cartAmount > prodAmount){
 		alert("구매가능수량을 초과하였습니다.")
 		return;
-	} */ 
-	$("form").attr("method" , "POST").attr("action" , "/purchase/addPurchase").submit();
+	}
+	if(cartAmount ==0){
+		alert("1개이상의 수량을 입력해주세요.")
+	}
+	$("form").attr("method" , "POST").attr("action" , "/cart/addCart?cartProdNo=${product.prodNo}").submit();
 }
-
 
 $(function() {
 	 $( "td.ct_btn01:contains('취소')").on("click", function(){
 		 history.go(-1)
 	 });
 	 
-	 $( "td.ct_btn01:contains('구매')" ).on("click" , function() {
-		 fncAddPurchase();
+	 $( "td.ct_btn01:contains('장바구니')" ).on("click" , function() {
+		 fncAddCart();
 	 });
 });
-
 
 </script>
 </head>
 
 <body>
 <!-- ////////////////// jQuery Event 처리로 변경됨 ///////////////////////// 
-<form name="addPurchase" method="post" action="/purchase/addPurchase">
+<form name="addCart" method="post" action="/cart/addCart">
 ////////////////////////////////////////////////////////////////////////////////////////////////// -->
-<form name="addPurchase" >
+<form name="addCart">
 
 <table width="100%" height="37" border="0" cellpadding="0"	cellspacing="0">
 	<tr>
@@ -84,25 +73,9 @@ $(function() {
 	</tr>
 </table>
 
-<input type="hidden" name="prodNo" value="${product.prodNo}" />
+<input type="hidden" name="cartProdNo" value="${product.prodNo}" />
 
 <table width="600" border="0" cellspacing="0" cellpadding="0"	align="center" style="margin-top: 13px;">
-	<tr>
-		<td height="1" colspan="3" bgcolor="D6D6D6"></td>
-	</tr>
-	<tr>
-		<td width="300" class="ct_write">
-			상품번호 <img src="/images/ct_icon_red.gif" width="3" height="3" align="absmiddle"/>
-		</td>
-		<td bgcolor="D6D6D6" width="1"></td>
-		<td class="ct_write01" width="299">
-			<table width="100%" border="0" cellspacing="0" cellpadding="0">
-				<tr>
-					<td width="105">${product.prodNo}</td>
-				</tr>
-			</table>
-		</td>
-	</tr>
 	<tr>
 		<td height="1" colspan="3" bgcolor="D6D6D6"></td>
 	</tr>
@@ -116,6 +89,7 @@ $(function() {
 	<tr>
 		<td height="1" colspan="3" bgcolor="D6D6D6"></td>
 	</tr>
+	
 	<tr>
 		<td width="104" class="ct_write">
 			구매가능수량 <img src="/images/ct_icon_red.gif" width="3" height="3" align="absmiddle"/>
@@ -123,11 +97,10 @@ $(function() {
 		<td bgcolor="D6D6D6" width="1"></td>
 		<td class="ct_write01">${product.prodAmount}</td>
 	</tr>
-	
-	
 	<tr>
 		<td height="1" colspan="3" bgcolor="D6D6D6"></td>
 	</tr>
+	
 	<tr>
 		<td width="104" class="ct_write">
 			상품상세정보 <img	src="/images/ct_icon_red.gif" width="3" height="3" align="absmiddle"/>
@@ -168,21 +141,7 @@ $(function() {
 		</td>
 		<td bgcolor="D6D6D6" width="1"></td>
 		<td class="ct_write01">${user.userId}</td>
-		<input type="hidden" name="buyer.userId" value="${user.userId}" />
-	</tr>
-	<tr>
-		<td height="1" colspan="3" bgcolor="D6D6D6"></td>
-	</tr>
-	<tr>
-		<td width="104" class="ct_write">구매방법</td>
-		<td bgcolor="D6D6D6" width="1"></td>
-		<td class="ct_write01">
-			<select 	name="paymentOption"		class="ct_input_g" 
-							style="width: 100px; height: 19px" maxLength="20">
-				<option value="1" selected="selected">현금구매</option>
-				<option value="2">신용구매</option>
-			</select>
-		</td>
+		<input type="hidden" name="cartUserId" value="${user.userId}" />
 	</tr>
 	<tr>
 		<td height="1" colspan="3" bgcolor="D6D6D6"></td>
@@ -192,71 +151,14 @@ $(function() {
 		<td width="104" class="ct_write">구매수량</td>
 		<td bgcolor="D6D6D6" width="1"></td>
 		<td class="ct_write01">
-			<input type="text" name="tranAmount" 	class="ct_input_g" 
+			<input type="text" name="cartAmount" 	class="ct_input_g" 
 						style="width: 100px; height: 19px" maxLength="20" />
 		</td>
 	</tr>
 	<tr>
 		<td height="1" colspan="3" bgcolor="D6D6D6"></td>
 	</tr>
-	
-	<tr>
-		<td width="104" class="ct_write">구매자이름</td>
-		<td bgcolor="D6D6D6" width="1"></td>
-		<td class="ct_write01">
-			<input type="text" name="receiverName" 	class="ct_input_g" 
-						style="width: 100px; height: 19px" maxLength="20" value="SCOTT" />
-		</td>
-	</tr>
-	<tr>
-		<td height="1" colspan="3" bgcolor="D6D6D6"></td>
-	</tr>
-	<tr>
-		<td width="104" class="ct_write">구매자연락처</td>
-		<td bgcolor="D6D6D6" width="1"></td>
-		<td class="ct_write01">
-			<input 	type="text" name="receiverPhone" class="ct_input_g" 
-							style="width: 100px; height: 19px" maxLength="20" value="null" />
-		</td>
-	</tr>
-	<tr>
-		<td height="1" colspan="3" bgcolor="D6D6D6"></td>
-	</tr>
-	<tr>
-		<td width="104" class="ct_write">구매자주소</td>
-		<td bgcolor="D6D6D6" width="1"></td>
-		<td class="ct_write01">
-			<input 	type="text" name="divyAddr" class="ct_input_g" 
-							style="width: 100px; height: 19px" maxLength="20" 	value="null" />
-		</td>
-	</tr>
-	<tr>
-		<td height="1" colspan="3" bgcolor="D6D6D6"></td>
-	</tr>
-	<tr>
-		<td width="104" class="ct_write">구매요청사항</td>
-		<td bgcolor="D6D6D6" width="1"></td>
-		<td class="ct_write01">
-			<input		type="text" name="divyRequest" 	class="ct_input_g" 
-							style="width: 100px; height: 19px" maxLength="20" />
-		</td>
-	</tr>
-	<tr>
-		<td height="1" colspan="3" bgcolor="D6D6D6"></td>
-	</tr>
-	<tr>
-		<td width="104" class="ct_write">배송희망일자</td>
-		<td bgcolor="D6D6D6" width="1"></td>
-		<td width="200" class="ct_write01">
-			<input 	type="text" readonly="readonly" name="divyDate" class="ct_input_g" 
-							style="width: 100px; height: 19px" maxLength="20"/>
-			<img 	src="../images/ct_icon_date.gif" width="15" height="15"	
-						onclick="show_calendar('document.addPurchase.divyDate', document.addPurchase.divyDate.value)"/>
-		</td>
-	</tr>
-	<tr>
-		<td height="1" colspan="3" bgcolor="D6D6D6"></td>
-	</tr>
+
 </table>
 
 <table width="100%" border="0" cellspacing="0" cellpadding="0" style="margin-top: 10px;">
@@ -269,10 +171,10 @@ $(function() {
 						<img src="/images/ct_btnbg01.gif" width="17" height="23"/>
 					</td>
 					<td background="/images/ct_btnbg02.gif" class="ct_btn01" style="padding-top: 3px;">
-						<!-- ////////////////// jQuery Event 처리로 변경됨 /////////////////////////
-						<a href="javascript:fncAddPurchase();">구매</a>
+						<!-- ////////////////// jQuery Event 처리로 변경됨 ///////////////////////// 
+						<a href="javascript:fncAddPurchase();">장바구니</a>
 						////////////////////////////////////////////////////////////////////////////////////////////////// -->
-						구매
+						장바구니
 					</td>
 					<td width="14" height="23">
 						<img src="/images/ct_btnbg03.gif" width="14" height="23"/>
@@ -282,7 +184,7 @@ $(function() {
 						<img src="/images/ct_btnbg01.gif" width="17" height="23"/>
 					</td>
 					<td background="/images/ct_btnbg02.gif" class="ct_btn01" style="padding-top: 3px;">
-						<!-- ////////////////// jQuery Event 처리로 변경됨 /////////////////////////
+						<!-- ////////////////// jQuery Event 처리로 변경됨 ///////////////////////// 
 						<a href="javascript:history.go(-1)">취소</a>
 						////////////////////////////////////////////////////////////////////////////////////////////////// -->
 						취소

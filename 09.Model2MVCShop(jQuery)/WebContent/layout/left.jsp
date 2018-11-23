@@ -66,9 +66,14 @@
 		 		$(window.parent.frames["rightFrame"].document.location).attr("href","/purchase/listPurchase");
 			}); 
 		 	
+		 	$( ".Depth03:contains('장바구니')" ).on("click" , function() {
+		 		$(window.parent.frames["rightFrame"].document.location).attr("href","/cart/listCart");
+			}); 
+		 	
 		 	$( ".Depth03:contains('최근 본 상품')" ).on("click" , function() {
 		 		history();
 			}); 
+		 	
 		});	
 		
 		
@@ -164,6 +169,17 @@
 					<a href="/listPurchase.do"  target="rightFrame">구매이력조회</a>
 					////////////////////////////////////////////////////////////////////////////////////////////////// -->
 					구매이력조회
+				</td>
+			</tr>
+			</c:if>
+			
+			<c:if test="${ !empty user && user.role == 'user'}">
+			<tr>
+				<td class="Depth03">
+				<!-- ////////////////// jQuery Event 처리로 변경됨 ///////////////////////// 
+					<a href="/cart/listCart"   target="rightFrame">장바구니</a>
+					////////////////////////////////////////////////////////////////////////////////////////////////// -->
+					장바구니
 				</td>
 			</tr>
 			</c:if>

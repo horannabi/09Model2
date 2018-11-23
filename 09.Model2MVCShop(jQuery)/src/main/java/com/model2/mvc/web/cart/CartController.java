@@ -1,4 +1,4 @@
-package com.model2.mvc.web.purchase;
+package com.model2.mvc.web.cart;
 
 import java.util.Map;
 
@@ -17,25 +17,27 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.model2.mvc.common.Page;
 import com.model2.mvc.common.Search;
+import com.model2.mvc.service.cart.CartService;
+import com.model2.mvc.service.domain.Cart;
 import com.model2.mvc.service.domain.Product;
-import com.model2.mvc.service.domain.Purchase;
 import com.model2.mvc.service.domain.User;
 import com.model2.mvc.service.product.ProductService;
-import com.model2.mvc.service.purchase.PurchaseService;
+import com.model2.mvc.service.product.impl.ProductServiceImpl;
+
 
 @Controller
-@RequestMapping("/purchase/*")
-public class PurchaseController {
+@RequestMapping("/cart/*")
+public class CartController {
 	
 	///Field
 	@Autowired
-	@Qualifier("purchaseServiceImpl")
-	private PurchaseService purchaseService;
+	@Qualifier("cartServiceImpl")
+	private CartService cartService;
 	@Autowired
 	@Qualifier("productServiceImpl")
 	private ProductService productService;
 	
-	public PurchaseController() {
+	public CartController() {
 		System.out.println(this.getClass());
 	}
 	
@@ -59,62 +61,69 @@ public class PurchaseController {
 		return modelAndView;
 	}*/
 	
-	@RequestMapping(value="addPurchase", method=RequestMethod.GET )
-	public ModelAndView addPurchase(@RequestParam("prodNo") int prodNo, HttpSession session) throws Exception{
-		System.out.println("/addPurchase : GET");
+	@RequestMapping(value="addCart", method=RequestMethod.GET )
+	public String addCart(@RequestParam("prodNo") int prodNo, Model model) throws Exception{
+		System.out.println("/addCart : GET");
+		//ProductService productService = new ProductServiceImpl();
 		Product product = productService.getProduct(prodNo);
+		model.addAttribute("product", product);
+		
+		return "forward:/cart/addCartView.jsp";
+	}
+	
+	@RequestMapping(value="addCart", method=RequestMethod.POST)
+	public String addCart(@ModelAttribute("cart") Cart cart, @RequestParam("cartProdNo") int cartProdNo, HttpSession session) throws Exception{
+		System.out.println("/addCart : POST"); 
+		Product cartProd = productService.getProduct(cartProdNo);
+		cart.setCartProd(cartProd);
+		cart.setCartUserId(((User)session.getAttribute("user")).getUserId());
+		cart.setCartCode("1");
+		cartService.addCart(cart);
+		return "redirect:/cart/listCart";
+	}
+	
+	@RequestMapping(value="listCart")
+	public String listCart(@ModelAttribute("search")Search search, HttpSession session, Model model) throws Exception{
+		System.out.println("/listCart");
+		
+		if(search.getCurrentPage() ==0 ){
+			search.setCurrentPage(1);
+		}
+		search.setPageSize(pageSize);
 		User user = (User)session.getAttribute("user");
+		// Business logic 수행
+		//Map<String , Object> map=purchaseService.getPurchaseList(search);
+		Map<String , Object> map=cartService.getCartList(search, user.getUserId());
 		
-		ModelAndView modelAndView = new ModelAndView();
-		modelAndView.setViewName("forward:/purchase/addPurchaseView.jsp");
-		modelAndView.addObject("product", product);
-		modelAndView.addObject("userId", user.getUserId());
-
-		return modelAndView;
+		Page resultPage = new Page( search.getCurrentPage(), ((Integer)map.get("totalCount")).intValue(), pageUnit, pageSize);
+		System.out.println(resultPage);
+		
+		// Model 과 View 연결
+		model.addAttribute("list", map.get("list"));
+		model.addAttribute("resultPage", resultPage);
+		model.addAttribute("search", search);
+		
+		return "forward:/cart/listCart.jsp";
 	}
 	
-	@RequestMapping(value="addPurchase", method=RequestMethod.POST)
-	public ModelAndView addPurchase(@ModelAttribute("purchase") Purchase purchase, @RequestParam("prodNo") int prodNo, HttpSession session) throws Exception{
-		System.out.println("/addPurchase : POST");
-		Product product = productService.getProduct(prodNo);
-		int prodAmount = product.getProdAmount();
-		product.setProTranCode("1");
-		product.setProdAmount(prodAmount-purchase.getTranAmount());
-		productService.updateProduct(product);
-		purchase.setTranCode("1");
-		purchase.setPurchaseProd(product);
-		purchase.setBuyer((User)session.getAttribute("user"));
-		purchaseService.addPurchase(purchase);
-		ModelAndView modelAndView = new ModelAndView();
-		modelAndView.setViewName("forward:/purchase/addPurchase.jsp");
-		modelAndView.addObject("purchase", purchase);
+	@RequestMapping(value="deleteCart")
+	public String deleteCart(@RequestParam("prodNo") int prodNo, HttpSession session, Model model) throws Exception{
+		System.out.println("/deleteCart");
+		//ProductService productService = new ProductServiceImpl();
+		Cart cart = new Cart();
+		Product cartProd=new Product();
+		cartProd.setProdNo(prodNo);
+		cart.setCartProd(cartProd);
+		cart.setCartUserId(((User)session.getAttribute("user")).getUserId());
 		
-		return modelAndView;
+		//model.addAttribute("cart", cart);
+		cartService.deleteCart(cart);
+		
+		return "redirect:/cart/listCart";
 	}
-	
-	@RequestMapping(value = "getPurchase")
-	public String getPurchase(@RequestParam("tranNo") int tranNo, Model model)  throws Exception{
-		System.out.println("/getPurchase");
-		Purchase purchase = purchaseService.getPurchase(tranNo);
-		
-		model.addAttribute("purchase", purchase);
-		
-		return "forward:/purchase/getPurchase.jsp";
-	}
-	
-	@RequestMapping(value = "getPurchase2")
-	public String getPurchase2(@RequestParam("prodNo") int prodNo, Model model)  throws Exception{
-		System.out.println("/getPurchase2");
-		Purchase purchase = purchaseService.getPurchase2(prodNo);
-		
-		model.addAttribute("purchase", purchase);
-		
-		return "forward:/purchase/getPurchase.jsp";
-	}
-	
-	@RequestMapping(value="updatePurchase", method=RequestMethod.GET)
-	public String updatePurchase(@RequestParam("tranNo") int tranNo, Model model) throws Exception{
-		System.out.println("/updatePurchase");
+	/*@RequestMapping("/updatePurchaseView")
+	public String updatePurchaseView(@RequestParam("tranNo") int tranNo, Model model) throws Exception{
+		System.out.println("/updatePurchaseView");
 		
 		Purchase purchase = purchaseService.getPurchase(tranNo);
 		model.addAttribute("purchase", purchase);
@@ -122,7 +131,7 @@ public class PurchaseController {
 		return "forward:/purchase/updatePurchase.jsp";
 	}
 	
-	@RequestMapping(value="updatePurchase", method=RequestMethod.POST)
+	@RequestMapping("/updatePurchase")
 	public String updatePurchase(@ModelAttribute("purchase") Purchase purchase) throws Exception{
 		System.out.println("/updatePurchase");
 		
@@ -131,7 +140,7 @@ public class PurchaseController {
 		return "redirect:/purchase/getPurchase?tranNo="+purchase.getTranNo();
 	}
 	
-	@RequestMapping(value = "listPurchase")
+	@RequestMapping("/listPurchase")
 	public String listProduct(@ModelAttribute("search")Search search , HttpSession session, Model model) throws Exception{
 		System.out.println("/listProduct");
 		
@@ -155,7 +164,7 @@ public class PurchaseController {
 		return "forward:/purchase/listPurchase.jsp";
 	}
 	
-	@RequestMapping(value = "updateTranCode")
+	@RequestMapping("/updateTranCode")
 	public String updateTranCode(@RequestParam("tranCode") String tranCode, @RequestParam("tranNo") int tranNo) throws Exception{
 		System.out.println("/updateTranCode");
 		Purchase purchase = purchaseService.getPurchase(tranNo);
@@ -163,13 +172,13 @@ public class PurchaseController {
 		purchaseService.updateTranCode(purchase);
 		return "redirect:/purchase/listPurchase";
 	}
-	@RequestMapping(value = "updateTranCodeByProd")
-	public String updateTranCodeByProd(@RequestParam("tranCode") String tranCode, @RequestParam("prodNo") int prodNo) throws Exception{
+	@RequestMapping("/updateTranCodeByProd")
+	public String updateTranCodeByProd(@RequestParam("tranCode") String tranCode, @RequestParam("purchaseProd.prodNo") int prodNo) throws Exception{
 		System.out.println("/updateTranCodeByProd");
 		
 		Purchase purchase = purchaseService.getPurchase2(prodNo);
 		purchase.setTranCode(tranCode);
 		purchaseService.updateTranCodeByProd(purchase);
 		return "redirect:/product/listProduct?menu=manage";
-	}
+	}*/
 }

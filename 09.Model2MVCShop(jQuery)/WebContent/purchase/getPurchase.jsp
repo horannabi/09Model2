@@ -67,14 +67,14 @@
 	</tr>
 	<tr>
 		<td width="104" class="ct_write">
-			물품번호 <img src="/images/ct_icon_red.gif" width="3" height="3" align="absmiddle"/>
+			상품명 <img src="/images/ct_icon_red.gif" width="3" height="3" align="absmiddle"/>
 		</td>
 		<td bgcolor="D6D6D6" width="1"></td>
 		<td class="ct_write01">
 			<table width="100%" border="0" cellspacing="0" cellpadding="0">
 				<tr>
 					<td width="105">
-					${purchase.purchaseProd.prodNo}</td>
+					${purchase.purchaseProd.prodName}</td>
 					<td></td>
 				</tr>
 			</table>
@@ -83,6 +83,26 @@
 	<tr>
 		<td height="1" colspan="3" bgcolor="D6D6D6"></td>
 	</tr>
+	
+	<tr>
+		<td width="104" class="ct_write">
+			구매수량 <img src="/images/ct_icon_red.gif" width="3" height="3" align="absmiddle"/>
+		</td>
+		<td bgcolor="D6D6D6" width="1"></td>
+		<td class="ct_write01">
+			<table width="100%" border="0" cellspacing="0" cellpadding="0">
+				<tr>
+					<td width="105">
+					${purchase.tranAmount}</td>
+					<td></td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td height="1" colspan="3" bgcolor="D6D6D6"></td>
+	</tr>
+	
 	<tr>
 		<td width="104" class="ct_write">
 			구매자아이디 <img	src="/images/ct_icon_red.gif" width="3" height="3" align="absmiddle"/>
@@ -98,10 +118,10 @@
 		<td width="104" class="ct_write">구매방법</td>
 		<td bgcolor="D6D6D6" width="1"></td>
 		<td class="ct_write01">
-			<c:if test = "${fn:trim(requestScope.purchase.paymentOption) == '1'}">
+			<c:if test = "${fn:trim(purchase.paymentOption) == '1'}">
 			현금구매
 			</c:if>
-			<c:if test = "${fn:trim(requestScope.purchase.paymentOption) == '2'}">
+			<c:if test = "${fn:trim(purchase.paymentOption) == '2'}">
 			카드구매
 			</c:if>
 		</td>
