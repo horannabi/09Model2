@@ -136,7 +136,7 @@ public class ProductController {
 		
 		productService.updateProduct(product);
 		
-		return "redirect:/getProduct?prodNo="+product.getProdNo();
+		return "redirect:/product/getProduct?prodNo="+product.getProdNo();
 		//포워드하면 string array 오류?
 	}
 	
