@@ -1,5 +1,5 @@
 <%@ page contentType="text/html; charset=euc-kr" %>
-<%@ page import="com.model2.mvc.service.domain.*" %>
+<%-- <%@ page import="com.model2.mvc.service.domain.*" %> --%>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 
 <%-- /////////////////////// EL / JSTL 적용으로 주석 처리 ////////////////////////
@@ -119,10 +119,10 @@
 		<td bgcolor="D6D6D6" width="1"></td>
 		<td class="ct_write01">
 			<c:if test = "${fn:trim(purchase.paymentOption) == '1'}">
-			현금구매
+			  현금구매
 			</c:if>
 			<c:if test = "${fn:trim(purchase.paymentOption) == '2'}">
-			카드구매
+			  카드구매
 			</c:if>
 		</td>
 	</tr>

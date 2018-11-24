@@ -23,7 +23,7 @@ function fncAddPurchase(){
 	var receiverPhone = $("input[name='receiverPhone']").val();
 	var divyAddr = $("input[name='divyAddr']").val();
 	var tranAmount= $("input[name='tranAmount']").val();
-	var prodAmount= $("td.ct_write:contains('구매가능수량')").val();
+	var prodAmount=$("td[name='prodAmount']");
 	
 	if(receiverName==null || receiverName.length<1){
 		alert("구매자이름은 반드시 입력하여야 합니다.");
@@ -37,10 +37,15 @@ function fncAddPurchase(){
 		alert("구매자주소는 반드시 입력하여야 합니다.");
 		return;
 	}
-	/* if(tranAmount > prodAmount){
+	if(tranAmount==null || tranAmount.length<1 || tranAmount==0){
+		alert("구매수량은 반드시 1개 이상 입력하여야 합니다.");
+		return;
+	}
+	
+ 	if(tranAmount > prodAmount){
 		alert("구매가능수량을 초과하였습니다.")
 		return;
-	} */ 
+	} 
 	$("form").attr("method" , "POST").attr("action" , "/purchase/addPurchase").submit();
 }
 
@@ -121,7 +126,7 @@ $(function() {
 			구매가능수량 <img src="/images/ct_icon_red.gif" width="3" height="3" align="absmiddle"/>
 		</td>
 		<td bgcolor="D6D6D6" width="1"></td>
-		<td class="ct_write01">${product.prodAmount}</td>
+		<td class="ct_write01" name=prodAmount>${product.prodAmount}</td>
 	</tr>
 	
 	

@@ -128,6 +128,7 @@
 				<option value="1"<%= (searchCondition.equals("1") ? "selected" : "")%>>상품명</option>
 				<option value="2"<%= (searchCondition.equals("2") ? "selected" : "")%>>상품가격</option>
 				/////////////////////// EL / JSTL 적용으로 주석 처리 //////////////////////// --%>
+				<option disabled selected value> --선택-- </option>
 				<option value="0"  ${ ! empty search.searchCondition && search.searchCondition==0 ? "selected" : "" }>상품번호</option>
 				<option value="1"  ${ ! empty search.searchCondition && search.searchCondition==1 ? "selected" : "" }>상품명</option>
 				<option value="2"  ${ ! empty search.searchCondition && search.searchCondition==2 ? "selected" : "" }>상품가격</option>
@@ -168,7 +169,7 @@
 <table width="100%" border="0" cellspacing="0" cellpadding="0" style="margin-top:10px;">
 	<tr>
 		<%--<td colspan="11" >전체   <%= resultPage.getTotalCount() %> 건수, 현재 <%= resultPage.getCurrentPage() %> 페이지</td>--%>
-		<td colspan="11" >
+		<td colspan="14" >
 			전체  ${resultPage.totalCount } 건수, 현재 ${resultPage.currentPage}  페이지
 		</td>	
 	</tr>
@@ -179,6 +180,8 @@
 		<td class="ct_line02"></td>
 		<td class="ct_list_b" width="150">가격</td>
 		<td class="ct_line02"></td>
+		<td class="ct_list_b" width="100">수량</td>
+		<td class="ct_line02"></td>
 		<td class="ct_list_b">등록일</td>	
 		<td class="ct_line02"></td>
 		<td class="ct_list_b">현재상태</td>	
@@ -188,7 +191,7 @@
 		</c:if>
 	</tr>
 	<tr>
-		<td colspan="11" bgcolor="808285" height="1"></td>
+		<td colspan="14" bgcolor="808285" height="1"></td>
 	</tr>
 	<%-- /////////////////////// EL / JSTL 적용으로 주석 처리 ////////////////////////
 	<% 	
@@ -246,6 +249,8 @@
 		<td></td>
 		<td align="left">${product.price}</td>
 		<td></td>
+		<td align="center">${product.prodAmount }</td>
+		<td></td>
 		<td align="left">${product.regDate}</td>
 		<td></td>
 		<td align="left" data-param="${product.proTranCode}">
@@ -281,7 +286,7 @@
 		</c:if>
 	</tr>
 	<tr>
-		<td colspan="11" bgcolor="D6D7D6" height="1"></td>
+		<td colspan="14" bgcolor="D6D7D6" height="1"></td>
 	</tr>
 	</c:forEach>
 </table>
