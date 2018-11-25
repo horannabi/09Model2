@@ -1,5 +1,6 @@
 package com.model2.mvc.web.product;
 
+import java.io.File;
 import java.util.Map;
 
 import javax.servlet.http.Cookie;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.model2.mvc.common.Page;
 import com.model2.mvc.common.Search;
@@ -63,8 +65,15 @@ public class ProductController {
 	}
 	
 	@RequestMapping(value="addProduct", method=RequestMethod.POST)
-	public String addProduct(@ModelAttribute("product") Product product) throws Exception {
+	public String addProduct(@ModelAttribute("product") Product product, @RequestParam("fileName") MultipartFile mtfFile) throws Exception {
 		System.out.println("/addProduct");
+		String url = "C:\\workspace\\09.Model2MVCShop(jQuery)\\WebContent\\images\\uploadFiles\\";
+		String fileName = mtfFile.getOriginalFilename();
+		File file = new File(url, fileName);
+		mtfFile.transferTo(file);
+		System.out.println("filename :"+fileName);
+		product.setFileName(fileName);
+		product.setManuDate(product.getManuDate().replace("-", ""));
 		productService.addProduct(product);
 
 		return "forward:/product/addProduct.jsp"; //왜 포워드

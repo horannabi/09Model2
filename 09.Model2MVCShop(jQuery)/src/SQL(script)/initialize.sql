@@ -1,8 +1,8 @@
-
+DROP TABLE cart;
 DROP TABLE transaction;
 DROP TABLE product;
 DROP TABLE users;
-DROP TABLE cart;
+
 
 DROP SEQUENCE seq_product_prod_no;
 DROP SEQUENCE seq_transaction_tran_no;
